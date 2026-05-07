@@ -1,5 +1,5 @@
 import "@/global.css";
-import { useSignIn } from "@clerk/expo";
+import { useSignIn, useUser } from "@clerk/expo";
 import { Link, useRouter } from "expo-router";
 import { styled } from "nativewind";
 import React from "react";
@@ -7,7 +7,8 @@ import { Image, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView as URSafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
-import { icons } from "@/constants/icons"
+import { icons } from "@/constants/icons";
+import { syncUserDataFromAppwrite } from "@/lib/utility";
 
 const SafeAreaView = styled(URSafeAreaView);
 
@@ -19,6 +20,7 @@ export default function SignInPage() {
   const [identifier, setIdentifier] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [code, setCode] = React.useState("");
+  const { user } = useUser();
 
   const handleSubmit = async () => {
     const { error } = await signIn.password({
@@ -38,6 +40,9 @@ export default function SignInPage() {
 
     if (signIn.status === "complete") {
       await signIn.finalize();
+      if (user?.id) {
+        await syncUserDataFromAppwrite(user.id);
+      }
       router.push("/");
     }
   };
@@ -47,6 +52,9 @@ export default function SignInPage() {
 
     if (signIn.status === "complete") {
       await signIn.finalize();
+      if (user?.id) {
+        await syncUserDataFromAppwrite(user.id);
+      }
       router.push("/");
     }
   };

@@ -7,14 +7,11 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { PostHogProvider } from "posthog-react-native";
 import { useEffect, useState } from "react";
+import { syncUserDataFromAppwrite } from "@/lib/utility";
 
 SplashScreen.preventAutoHideAsync();
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
-
-if (!publishableKey) {
-  throw new Error('Add your Clerk Publishable Key to the .env file')
-}
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 if (!publishableKey) {
   throw new Error("Add your Clerk Publishable Key to the .env file");
@@ -34,46 +31,46 @@ function RootLayoutContent() {
     "Sans-Light": require("../assets/fonts/PlusJakartaSans-Light.ttf"),
     "Sans-Coopbl": require("../assets/fonts/COOPBL.ttf"),
   });
-  
+
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: true,
       shouldSetBadge: false,
-      shouldShowBanner: true, 
-      shouldShowList: true,   
+      shouldShowBanner: true,
+      shouldShowList: true,
     }),
   });
+
   useEffect(() => {
     if (!authLoaded) return;
-  
-    if (!user) {
-      // Not logged in, nothing to hydrate
+
+    if (user?.id) {
+      const currentUserId = user.id;
+      (async () => {
+        try {
+          await syncUserDataFromAppwrite(currentUserId);
+          await initializeClasses(currentUserId);
+          await initializeTasks(currentUserId);
+        } catch (error) {
+          console.error("Failed to initialize data:", error);
+        } finally {
+          setDataHydrated(true);
+        }
+      })();
+    } else {
+      // Not logged in
       setDataHydrated(true);
-      return;
     }
-  
-    // Logged in, hydrate data
-    const currentUserId = user.id;
-    (async () => {
-      try {
-        await initializeClasses(currentUserId);
-        await initializeTasks(currentUserId);
-        if (currentUserId === user.id) setDataHydrated(true);
-      } catch (error) {
-        console.error("Failed to initialize data:", error);
-        setDataHydrated(true);
-      }
-    })();
-  }, [authLoaded, user]);
+  }, [authLoaded, user?.id]);
 
   useEffect(() => {
     if (fontsLoaded && authLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, authLoaded]);
-  
-  if (!fontsLoaded || !authLoaded) return null;
+
+  if (!fontsLoaded || !authLoaded || !dataHydrated) return null;
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }

@@ -1,4 +1,6 @@
 import * as SecureStore from "expo-secure-store";
+import { fetchClassesFromAppwrite, fetchTasksFromAppwrite } from "@/lib/appwrite";
+import { CLASSES, TASKS } from "@/constants/data";
 
 export function buildAlarmDate(
   year: number,
@@ -73,5 +75,34 @@ export async function loadTasks(userId: string): Promise<Tasks[]> {
   } catch (e) {
     console.error("Failed to load tasks:", e);
     return [];
+  }
+}
+export async function syncUserDataFromAppwrite(userId: string): Promise<void> {
+  try {
+    const [cloudClasses, cloudTasks] = await Promise.all([
+      fetchClassesFromAppwrite(userId),
+      fetchTasksFromAppwrite(userId),
+    ]);
+
+    // Replace local data with cloud data
+    CLASSES.splice(0, CLASSES.length, ...cloudClasses);
+    TASKS.splice(0, TASKS.length, ...cloudTasks);
+
+    // Save to local SecureStore
+    await Promise.all([
+      saveClasses(cloudClasses, userId),
+      saveTasks(cloudTasks, userId),
+    ]);
+
+    console.log("Synced from Appwrite:", cloudClasses.length, "classes,", cloudTasks.length, "tasks");
+  } catch (error) {
+    console.error("Failed to sync from Appwrite:", error);
+    // Fallback to local data if cloud fails
+    const [localClasses, localTasks] = await Promise.all([
+      loadClasses(userId),
+      loadTasks(userId),
+    ]);
+    CLASSES.splice(0, CLASSES.length, ...localClasses);
+    TASKS.splice(0, TASKS.length, ...localTasks);
   }
 }

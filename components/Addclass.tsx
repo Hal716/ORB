@@ -134,7 +134,7 @@ export default function Addclass() {
       const localSaved = await saveClasses(CLASSES, user.id);
       if (!localSaved) {
         throw new Error("Could not save classes locally.");
-      }
+      } 
 
       let merged;
 
