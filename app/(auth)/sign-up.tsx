@@ -4,7 +4,7 @@ import { useSignUp } from "@clerk/expo";
 import { Link, useRouter } from "expo-router";
 import { styled } from "nativewind";
 import React from "react";
-import { Image, Pressable, Text, TextInput, View } from "react-native";
+import { Image, Pressable, Text, TextInput, View, ScrollView } from "react-native";
 import { SafeAreaView as URSafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
@@ -60,6 +60,8 @@ export default function SignUpPage() {
 
   return (
     <SafeAreaView className="auth-screen">
+      <ScrollView>
+
       {/* background design */}
       <View className="absolute inset-0 overflow-hidden">
         <Image
@@ -132,8 +134,8 @@ export default function SignUpPage() {
       <StatusBar style="dark" />
       <View className="">
         <Image
-          source={require("@/assets/icons/orbblack.png")}
-          className="w-30 h-30"
+          source={require("@/assets/icons/Vector.png")}
+          className="m-5 w-25 h-30"
           resizeMode="contain"
         />
       </View>
@@ -276,6 +278,7 @@ export default function SignUpPage() {
           )}
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

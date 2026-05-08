@@ -22,6 +22,16 @@ import calndar from "@/assets/icons/clandar.png";
 import google from "@/assets/icons/google.jpg";
 import orbb from "@/assets/icons/orbblack.png";
 import blackgo from "@/assets/icons/blackgo.jpg";
+import youtube from "@/assets/icons/icons8-youtube-100.png";
+import twiter from "@/assets/icons/icons8-twitter-bird-100.png";
+import amazon from "@/assets/icons/icons8-amazon-100.png";
+import facebook from "@/assets/icons/icons8-facebook-100.png";
+import discord from "@/assets/icons/icons8-discord-new-100.png";
+import windows from "@/assets/icons/icons8-windows-8-100.png";
+import telegram from "@/assets/icons/icons8-telegram-100.png";
+import idk from "@/assets/icons/idk.png";
+
+
 
 export const icons = {
     home,
@@ -48,6 +58,14 @@ export const icons = {
     google,
     netflix,
     orbb,
+    youtube,
+    twiter,
+    amazon,
+    facebook,
+    discord,
+    windows,
+    telegram,
+    idk
 } as const;
 
 export type IconKey = keyof typeof icons;

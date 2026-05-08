@@ -7,15 +7,18 @@ import dayjs from "dayjs";
 import { useFocusEffect, useRouter } from "expo-router";
 import { styled } from "nativewind";
 import { useCallback, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, View, Image } from "react-native";
 import { SafeAreaView as URSafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { icons } from "@/constants/icons";
+
 
 const SafeAreaView = styled(URSafeAreaView);
 
 export default function TasksPage() {
   const router = useRouter();
   const { user } = useUser();
+  const seticons = icons
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Refresh task list when page comes into focus
@@ -68,15 +71,45 @@ export default function TasksPage() {
 
   return (
     <SafeAreaView className="flex-1 bg-background p-5">
+      <Image
+        source={seticons.idk}
+        className="absolute opacity-5"
+        style={{ top: -180, right: -300, }}
+        resizeMode="contain"
+      />
       <StatusBar style="dark" />
+      <Image
+        source={seticons.youtube}
+        className="absolute w-24 h-24 opacity-10"
+        style={{ bottom: 120, left: 20, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.discord}
+        className="absolute w-20 h-20 opacity-10"
+        style={{ bottom: 80, left: 110, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.amazon}
+        className="absolute w-18 h-18 opacity-10"
+        style={{ bottom: 120, right: 0, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.windows}
+        className="absolute w-26 h-26 opacity-10"
+        style={{ bottom: 60, right: 80, transform: [{ rotate: '-25deg' }] }}
+        resizeMode="contain"
+      />
       <ScrollView contentContainerClassName="pb-20">
-        <View className="flex-row items-center justify-between mb-6">
+        <View className="p-5 flex-row items-center justify-between">
           <Text className="text-3xl font-Coopbl text-primary">Tasks</Text>
           <Pressable
-            className="auth-button"
+            className="auth-button p-5"
             onPress={() => router.push("/add-task" as any)}
           >
-            <Text className="auth-button-text">Add Task</Text>
+            <Text className="auth-button-text">Add Task </Text>
           </Pressable>
         </View>
 

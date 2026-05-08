@@ -9,6 +9,7 @@ import { PostHogProvider } from "posthog-react-native";
 import { useEffect, useState } from "react";
 import { syncUserDataFromAppwrite } from "@/lib/utility";
 
+
 SplashScreen.preventAutoHideAsync();
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;

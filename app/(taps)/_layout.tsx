@@ -4,8 +4,10 @@ import "@/global.css";
 import { useAuth } from "@clerk/expo";
 import { clsx } from "clsx";
 import { Redirect, Tabs } from "expo-router";
+import { useColorScheme } from "nativewind";
 import { Image, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 
 const tabBar = components.tabBar;
 
@@ -42,9 +44,9 @@ const TabLayout = () => {
           marginHorizontal: tabBar.horizontalInset,
           borderRadius: tabBar.radius,
           backgroundColor: colors.primary,
-          borderWidth: 0,
           elevation: 0,
         },
+
         tabBarItemStyle: {
           padding: tabBar.height / 2 - tabBar.iconFrame / 1.3,
         },

@@ -3,12 +3,13 @@ import ListHeading from "@/components/ListHeading";
 import Tasks from "@/components/Tasks";
 import { CLASSES, HOME_USER, TASKS } from "@/constants/data";
 import "@/global.css";
+import { icons } from "@/constants/icons";
 import { useUser } from "@clerk/expo";
 import dayjs from "dayjs";
 import { useFocusEffect, useRouter } from "expo-router";
 import { styled } from "nativewind";
 import { useCallback, useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 import { SafeAreaView as URSafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 // import * as Notifications from 'expo-notifications';
@@ -16,18 +17,10 @@ import { StatusBar } from "expo-status-bar";
 const SafeAreaView = styled(URSafeAreaView);
 
 
-// async function sendNotification() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Hello 👋",
-//       body: "This is your notification!",
-//     },
-//     trigger: null, // shows immediately
-//   });
-// }
 export default function App() {
-  const { user } = useUser();
   const router = useRouter();
+  const { user } = useUser();
+  const  seticons = icons;
   const displayName = user?.username ?? user?.firstName ?? HOME_USER.name;
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -42,7 +35,37 @@ export default function App() {
   return (
     
     <SafeAreaView className="flex-1 bg-background p-5">
+      <Image
+        source={seticons.idk}
+        className="absolute opacity-5"
+        style={{ top: -180, right: -300, }}
+        resizeMode="contain"
+      />
       <StatusBar style="dark" />
+      <Image
+        source={seticons.github}
+        className="absolute w-14 h-14 opacity-10"
+        style={{ bottom: 120, left: 20, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.blackgo}
+        className="absolute w-20 h-20 opacity-10"
+        style={{ bottom: 80, left: 95, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.openai}
+        className="absolute w-14 h-14 opacity-10"
+        style={{ bottom: 120, right: 0, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.dropbox}
+        className="absolute w-24 h-24 opacity-10"
+        style={{ bottom: 60, right: 50, transform: [{ rotate: '-25deg' }] }}
+        resizeMode="contain"
+      />
       <View>
         <FlatList
           key={`tasks-${refreshKey}`}

@@ -17,6 +17,7 @@ import {
     View,
 } from "react-native";
 import { SafeAreaView as URSafeAreaView } from "react-native-safe-area-context";
+import { Calendar } from "react-native-calendars";
 
 
 const SafeAreaView = styled(URSafeAreaView);
@@ -28,6 +29,7 @@ const priorityOptions: Array<"Low" | "Medium" | "High"> = [
 const defaultTaskColor = "#f5c542";
 
 export default function Addtask() {
+  const [showCalendar, setShowCalendar] = useState(false);
   const router = useRouter();
   const { user } = useUser();
   const { index } = useLocalSearchParams();
@@ -294,15 +296,43 @@ export default function Addtask() {
             </View>
           </View>
 
+
           <View className="auth-field">
             <Text className="auth-label">Due date</Text>
-            <TextInput
-              className="auth-input"
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor="#666666"
-              value={dueDate}
-              onChangeText={setDueDate}
-            />
+                      
+            {/* Touchable button that shows selected date */}
+            <Pressable
+              onPress={() => setShowCalendar(!showCalendar)}
+              className="auth-input justify-center"
+            >
+              <Text className={dueDate ? "text-foreground" : "text-muted-foreground"}>
+                {dueDate || "Select a date"}
+              </Text>
+            </Pressable>
+                      
+            {/* Calendar dropdown */}
+            {showCalendar && (
+              <View className="mt-2 rounded-2xl overflow-hidden border border-border">
+                <Calendar
+                  onDayPress={(day) => {
+                    setDueDate(day.dateString); // already in YYYY-MM-DD format ✅
+                    setShowCalendar(false);     // close after selecting
+                  }}
+                  markedDates={{
+                    [dueDate]: { selected: true, selectedColor: "#f5c542" },
+                  }}
+                  minDate={dayjs().format("YYYY-MM-DD")} // disable past dates
+                  theme={{
+                    backgroundColor: "transparent",
+                    calendarBackground: "transparent",
+                    selectedDayBackgroundColor: "#f5c542",
+                    selectedDayTextColor: "#000",
+                    todayTextColor: "#f5c542",
+                    arrowColor: "#f5c542",
+                  }}
+                />
+              </View>
+            )}
           </View>
 
           <View className="auth-field">
