@@ -1,4 +1,5 @@
-import { CLASSES } from "@/constants/data";
+import * as Notifications from "expo-notifications";
+import { CLASSES, TASKS } from "@/constants/data";
 import "@/global.css";
 import {
   deleteClassRowFromAppwrite,
@@ -21,9 +22,12 @@ import {
 } from "react-native";
 import { SafeAreaView as URSafeAreaView } from "react-native-safe-area-context";
 import ColorPicker from "react-native-wheel-color-picker";
+import Slider from '@react-native-community/slider';
+import tinycolor from 'tinycolor2';
 
 const SafeAreaView = styled(URSafeAreaView);
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 
 export default function Addclass() {
   const router = useRouter();
@@ -36,8 +40,13 @@ export default function Addclass() {
   const [hour, setHour] = useState(8);
   const [minute, setMinute] = useState("00");
   const [period, setPeriod] = useState<"AM" | "PM">("AM");
+  const [endHour, setEndHour] = useState(9);
+  const [endMinute, setEndMinute] = useState("00");
+  const [endPeriod, setEndPeriod] = useState<"AM" | "PM">("AM");
   const [color, setColor] = useState("#f5c542");
+  const [brightness, setBrightness] = useState(1);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const adjustedColor = tinycolor(color).lighten((brightness - 1) * 50).toString();
 
   // Load class data if editing
   useEffect(() => {
@@ -56,6 +65,23 @@ export default function Addclass() {
         setMinute(itemDate.minute().toString().padStart(2, "0"));
         setColor(item.color ?? "#f5c542");
         setEditingIndex(classIndex);
+
+        // Load end time if it exists
+        if (item.endDate) {
+          const endDate = dayjs(item.endDate);
+          const endH = endDate.hour();
+          setEndPeriod(endH >= 12 ? "PM" : "AM");
+          setEndHour(endH % 12 === 0 ? 12 : endH % 12);
+          setEndMinute(endDate.minute().toString().padStart(2, "0"));
+        const requestPermissions = async () => {
+          const { status } = await Notifications.requestPermissionsAsync();
+          if (status !== 'granted') {
+            Alert.alert('Permission required', 'Please enable notifications in settings.');
+          }
+        };
+        requestPermissions();
+        
+        }
       }
     }
   }, [index]);
@@ -68,18 +94,84 @@ export default function Addclass() {
     setHour(8);
     setMinute("00");
     setPeriod("AM");
+    setEndHour(9);
+    setEndMinute("00");
+    setEndPeriod("AM");
     setColor("#f5c542");
     setEditingIndex(null);
+  };
+
+  
+  
+  const scheduleClassAlarm = async (
+    classItem: {
+      name: string;
+      instructor: string;
+      classroom?: string;
+      date: string;
+      color?: string;
+      endDate?: string; 
+      appwriteRowId?: string;
+      notificationId?: string;
+    }
+  ) => {
+    
+    const classDate = dayjs(classItem.date)
+  
+  
+    const notifyHour = classDate.subtract(10, 'minute').hour();
+    const notifyMinute = classDate.subtract(10, 'minute').minute();
+  
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: '⏰ Class in 10 minutes!',
+        body: `${classItem.name} — ${classItem.classroom}`,
+        sound: true,
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.WEEKLY,  // 👈 repeats every week
+        weekday: classDate.day() + 1, // Expo uses 1=Sun, 2=Mon... dayjs uses 0=Sun
+        hour: notifyHour,
+        minute: notifyMinute,
+      },
+    });
+  
+    return notificationId;
   };
 
   const buildDateForWeekday = (weekdayValue: number) => {
     const rawHour = Number(hour);
     const rawMinute = Number(minute);
     const safeHour = isNaN(rawHour) ? 8 : Math.min(Math.max(rawHour, 1), 12);
+    const safeMinute = isNaN(rawMinute) ? 0 : Math.min(Math.max(rawMinute, 0), 59);
+    const selectedHour = period === "AM" ? safeHour % 12 : (safeHour % 12) + 12;
+  
+    let target = dayjs()
+      .day(weekdayValue)
+      .hour(selectedHour)
+      .minute(safeMinute)
+      .second(0);
+  
+    // Only push to next week if the weekday itself is already past this week
+    // (not if just the time has passed today)
+    if (weekdayValue < dayjs().day()) {
+      target = target.add(7, "day");
+    }
+  
+    return target.toISOString();
+  };
+
+  
+
+  const buildEndDateForWeekday = (weekdayValue: number) => {
+    const rawHour = Number(endHour);
+    const rawMinute = Number(endMinute);
+    const safeHour = isNaN(rawHour) ? 9 : Math.min(Math.max(rawHour, 1), 12);
     const safeMinute = isNaN(rawMinute)
       ? 0
       : Math.min(Math.max(rawMinute, 0), 59);
-    const selectedHour = period === "AM" ? safeHour % 12 : (safeHour % 12) + 12;
+    const selectedHour =
+      endPeriod === "AM" ? safeHour % 12 : (safeHour % 12) + 12;
 
     let target = dayjs()
       .day(weekdayValue)
@@ -100,16 +192,33 @@ export default function Addclass() {
       );
       return;
     }
+    if (editingIndex !== null && CLASSES[editingIndex]?.notificationId) {
+      await Notifications.cancelScheduledNotificationAsync(
+        CLASSES[editingIndex].notificationId
+      );
+    }
 
-    const daysToSave = selectedDays.length > 0 ? selectedDays : [dayjs().day()];
-    const newClasses = daysToSave.map((weekdayValue: number) => ({
+    const daysToSave =
+      selectedDays.length > 0 ? selectedDays : [dayjs().day()];
+
+    const newClasses = daysToSave.map((weekdayValue) => ({
       name: name.trim(),
       instructor: instructor.trim(),
       classroom: classroom.trim(),
       date: buildDateForWeekday(weekdayValue),
+      endDate: buildEndDateForWeekday(weekdayValue),
       color: color.trim() || "#f5c542",
     }));
-
+    const classesWithNotifications = await Promise.all(
+      newClasses.map(async (item) => {
+        const notificationId = await scheduleClassAlarm(item);
+    
+        return {
+          ...item,
+          notificationId,
+        };
+      }),
+    );
     if (!user?.id) {
       Alert.alert("Authentication required", "Please sign in again.");
       return;
@@ -134,7 +243,7 @@ export default function Addclass() {
       const localSaved = await saveClasses(CLASSES, user.id);
       if (!localSaved) {
         throw new Error("Could not save classes locally.");
-      } 
+      }
 
       let merged;
 
@@ -148,6 +257,7 @@ export default function Addclass() {
           classroom: item.classroom ?? "",
           color: item.color ?? "#f5c542",
           userId: user.id,
+          endDate: item.endDate,
         });
         merged = [{ ...item, appwriteRowId: previousAppwriteRowId }];
       } else {
@@ -163,7 +273,7 @@ export default function Addclass() {
         }
 
         const createdRows = await Promise.all(
-          newClasses.map((item: Classes) =>
+          newClasses.map((item) =>
             saveClassToAppwrite({
               name: item.name,
               instructor: item.instructor,
@@ -171,11 +281,12 @@ export default function Addclass() {
               classroom: item.classroom ?? "",
               color: item.color ?? "#f5c542",
               userId: user.id,
+              endDate: item.endDate,
             }),
           ),
         );
 
-        merged = newClasses.map((item: Classes, i: number) => ({
+        merged = newClasses.map((item, i) => ({
           ...item,
           appwriteRowId: createdRows[i].$id,
         }));
@@ -185,7 +296,7 @@ export default function Addclass() {
         CLASSES.splice(editingIndex, merged.length, ...merged);
       } else {
         const start = CLASSES.length - newClasses.length;
-        merged.forEach((c: Classes, i: number) => {
+        merged.forEach((c, i) => {
           CLASSES[start + i] = c;
         });
       }
@@ -267,17 +378,18 @@ export default function Addclass() {
           <View className="auth-field">
             <Text className="auth-label">Weekdays</Text>
             <View className="flex-row flex-wrap gap-2">
-              {weekdays.map((day: string, index: number) => {
-                const isSelected = selectedDays.includes(index);
+              {weekdays.map((day, index) => {
+                const dayIndex = index as number;
+                const isSelected = selectedDays.includes(dayIndex);
                 return (
                   <Pressable
                     key={day}
                     onPress={() => {
                       setSelectedDays((prev) => {
-                        const selected = prev.includes(index)
-                          ? prev.filter((item: number) => item !== index)
-                          : [...prev, index];
-                        return selected.sort((a: number, b: number) => a - b);
+                        const selected = prev.includes(dayIndex)
+                          ? prev.filter((item) => item !== dayIndex)
+                          : [...prev, dayIndex];
+                        return selected.sort((a, b) => a - b);
                       });
                     }}
                     className={`rounded-2xl px-3 py-2 border ${
@@ -297,8 +409,9 @@ export default function Addclass() {
             </View>
           </View>
 
+          {/* Start Time */}
           <View className="auth-field">
-            <Text className="auth-label">Time</Text>
+            <Text className="auth-label">Start Time</Text>
             <View className="flex-row items-start gap-2">
               <View className="flex-1">
                 <Text className="auth-label mb-2">Hour</Text>
@@ -315,7 +428,6 @@ export default function Addclass() {
                   }}
                 />
               </View>
-
               <View className="flex-1">
                 <Text className="auth-label mb-2">Minute</Text>
                 <TextInput
@@ -353,16 +465,75 @@ export default function Addclass() {
             </View>
           </View>
 
+          {/* End Time */}
+          <View className="auth-field">
+            <Text className="auth-label">End Time</Text>
+            <View className="flex-row items-start gap-2">
+              <View className="flex-1">
+                <Text className="auth-label mb-2">Hour</Text>
+                <TextInput
+                  className="auth-input"
+                  placeholder="HH"
+                  placeholderTextColor="#666666"
+                  keyboardType="number-pad"
+                  maxLength={2}
+                  value={endHour.toString()}
+                  onChangeText={(value) => {
+                    const numeric = Number(value.replace(/[^0-9]/g, ""));
+                    setEndHour(isNaN(numeric) ? 0 : numeric);
+                  }}
+                />
+              </View>
+              <View className="flex-1">
+                <Text className="auth-label mb-2">Minute</Text>
+                <TextInput
+                  className="auth-input"
+                  placeholder="MM"
+                  placeholderTextColor="#666666"
+                  keyboardType="number-pad"
+                  maxLength={2}
+                  value={endMinute}
+                  onChangeText={(value) => {
+                    const numeric = value.replace(/[^0-9]/g, "");
+                    setEndMinute(numeric.slice(0, 2));
+                  }}
+                />
+              </View>
+            </View>
+            <View className="flex-row gap-2 mt-3">
+              {(["AM", "PM"] as const).map((periodValue) => (
+                <Pressable
+                  key={periodValue}
+                  onPress={() => setEndPeriod(periodValue)}
+                  className={`rounded-2xl px-4 py-2 border ${
+                    endPeriod === periodValue
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card"
+                  }`}
+                >
+                  <Text
+                    className={`text-sm ${endPeriod === periodValue ? "text-primary" : "text-muted-foreground"}`}
+                  >
+                    {periodValue}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+
           <View className="auth-field">
             <Text className="auth-label">Color</Text>
-            <View className="items-center">
+            <View style={{ width: '100%' }}>
               <ColorPicker
                 color={color}
                 onColorChange={setColor}
+                onColorChangeComplete={setColor}
                 thumbSize={30}
-                sliderSize={30}
+                sliderSize={20}
                 noSnap={true}
                 row={false}
+                shadeSliderThumb
+                
               />
               <Text className="text-sm text-muted-foreground mt-2">
                 Selected: {color}

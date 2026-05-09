@@ -3,8 +3,9 @@ import "@/global.css";
 import dayjs from "dayjs";
 import { useFocusEffect, useRouter } from "expo-router";
 import { styled } from "nativewind";
+import {icons} from "@/constants/icons"
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView as URSafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
@@ -14,6 +15,7 @@ const weekdays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 export default function SchudulePage() {
   const today = dayjs();
+  const seticons = icons
   const [selectedDay, setSelectedDay] = useState(today.startOf("day"));
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -54,14 +56,44 @@ export default function SchudulePage() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
+      <Image
+        source={seticons.idk}
+        className="absolute opacity-5"
+        style={{ top: -180, right: -300, }}
+        resizeMode="contain"
+      />
       <StatusBar style="dark" />
+      <Image
+        source={seticons.netflix}
+        className="absolute w-14 h-14 opacity-10"
+        style={{ bottom: 120, left: 20, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.adobe}
+        className="absolute w-14 h-14 opacity-10"
+        style={{ bottom: 80, left: 110, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.github}
+        className="absolute w-14 h-14 opacity-10"
+        style={{ bottom: 120, right: 0, transform: [{ rotate: '10deg' }] }}
+        resizeMode="contain"
+      />
+      <Image
+        source={seticons.canva}
+        className="absolute w-20 h-24 opacity-10"
+        style={{ bottom: 60, right: 80, transform: [{ rotate: '-25deg' }] }}
+        resizeMode="contain"
+      />
       <View className="p-5 flex-row items-center justify-between">
         <View>
           <Text className="text-3xl font-Coopbl text-primary">This week</Text>
           <Text className="auth-helper mt-1">{today.format("ddd, MMM D")}</Text>
         </View>
         <Pressable
-          className="auth-button"
+          className="auth-button p-5"
           onPress={() => router.push("/add-class" as any)}
         >
           <Text className="auth-button-text">Add class</Text>

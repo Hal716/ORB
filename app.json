@@ -2,26 +2,33 @@
   "expo": {
     "name": "ORB",
     "slug": "ORB",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icons/orb.png",
+    "icon": "./assets/icons/adaptive-icon.png",
     "scheme": "orb",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "com.hal716.orb",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon" : {
+        "dark": "./assets/icons/ios-dark.png",
+        "light": "./assets/icons/ios-light.png",
+        "tinted": "./assets/icons/ios-tinted.png"
+      }
     },
     "android": {
+      "versionCode": 3,
       "package": "com.hal716.orb",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/icons/orb.png",
-        "backgroundImage": "./assets/icons/orb.png",
-        "monochromeImage": "./assets/icons/orb.png"
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "backgroundImage": "./assets/icons/adaptive-icon.png",
+        "monochromeImage": "./assets/icons/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
       "output": "static",
@@ -32,11 +39,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/icons/splash-icon-light.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
+            "image": "./assets/icons/splash-icon-light.png",
             "backgroundColor": "#000000"
           }
         }
@@ -47,6 +55,7 @@
       "expo-localization",
       "@clerk/expo"
     ],
+    
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

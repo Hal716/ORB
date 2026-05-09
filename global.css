@@ -3,9 +3,11 @@
 @import "tailwindcss/utilities.css";
 
 @import "nativewind/theme";
-
+/* 211B03 */
 @theme {
   --color-background: #fff9e3;
+  --color-dark: #211B03;
+  --color-taps: #3A3289;
   --color-btest: #fff2c1;
   --color-foreground: #081126;
   --color-card: #fff8e7;
@@ -62,12 +64,12 @@
 
 @layer components {
   .test {
-    @apply text-4xl text-subprimary;
+    @apply text-2xl text-subprimary;
     font-family: var(--font-Coopbl);
     padding-top: 8px;
   }
   .test1 {
-    @apply text-5xl text-primary;
+    @apply text-3xl text-primary;
     font-family: var(--font-Coopbl);
   }
 

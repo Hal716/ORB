@@ -9,13 +9,15 @@ declare global {
 
 
 // Mine
-  interface Classes {
+  type Classes = {
     name: string;
     instructor: string;
-    date: string;
     classroom?: string;
+    date: string;
     color?: string;
+    endDate?: string; 
     appwriteRowId?: string;
+    notificationId?: string;
   }
   
   type Tasks = {
@@ -25,7 +27,7 @@ declare global {
     dueDate: string;
     color: string;
     appwriteRowId?: string;
-    notificationId?: string; // 👈 add this
+    notificationId?: string;
   };
 
 // IDK
