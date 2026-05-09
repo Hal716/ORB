@@ -30,6 +30,7 @@ import discord from "@/assets/icons/icons8-discord-new-100.png";
 import windows from "@/assets/icons/icons8-windows-8-100.png";
 import telegram from "@/assets/icons/icons8-telegram-100.png";
 import idk from "@/assets/icons/idk.png";
+import web from "@/assets/icons/icons8-web-96.png"
 
 
 
@@ -65,7 +66,8 @@ export const icons = {
     discord,
     windows,
     telegram,
-    idk
+    idk,
+    web,
 } as const;
 
 export type IconKey = keyof typeof icons;

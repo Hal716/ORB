@@ -61,6 +61,9 @@ export default function SettingsPage() {
       displayName,
     );
   };
+  const deleteAccount = async () => {
+    await user?.delete();
+  };
 
   return (
     <SafeAreaView
@@ -139,7 +142,39 @@ export default function SettingsPage() {
             <View className="auth-field">
               <Text className="auth-label mt-5">Email</Text>
               <Text className="auth-helper mb-5">{emailAddress}</Text>
+              <Text className="auth-label mt-5">About Us</Text>
+              <View className="flex-row mb-5">
+                <Image source={seticons.github} className="w-6 h-6 mr-2">
+                </Image>
+                <Link href={"https://github.com/Hal716"}><Text className="font-Sans-ExtraBold text-taps">GitHup</Text>
+                </Link>
+                </View>
+                <View className="flex-row mb-5">
+
+                <Image source={seticons.web} className="w-7 h-7 mr-2">
+                </Image>
+                <Link href={"https://hamza.shoqi.net"}><Text className="font-Sans-ExtraBold text-taps">Website</Text>
+                </Link>
+              </View>
             </View>
+            <Pressable className="auth-button" 
+            onPress={() =>
+              Alert.alert("Delete Account", "Are you sure you want to Delete your account?", [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Delete Account",
+                  style: "destructive",
+                  onPress: async () => {
+                    await deleteAccount();
+                    router.replace({ pathname: "/(auth)/sign-in" as any });
+                  },
+                },
+              ])
+            }
+            >
+              <Text className="auth-button-text">Delete Account</Text>
+            </Pressable>
+            
             <Pressable
               className="auth-button "
               onPress={() =>
@@ -155,7 +190,7 @@ export default function SettingsPage() {
                   },
                 ])
               }
-            >
+              >
               <Text className="auth-button-text">Sign Out</Text>
             </Pressable>
           </>
@@ -170,7 +205,7 @@ export default function SettingsPage() {
               onPress={() => {
                 /* navigation handled by Link below */
               }}
-            >
+              >
               <Link href={{ pathname: "/(auth)/sign-in" as any }}>
                 <Text className="auth-secondary-button-text">
                   Go to Sign In
@@ -186,6 +221,7 @@ export default function SettingsPage() {
           <Text className="auth-link">Go Back</Text>
         </Link>
       </View>
+      <Text className="m-7">© 2026 ORB App.</Text>  
     </SafeAreaView>
   );
 }

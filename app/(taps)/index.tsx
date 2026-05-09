@@ -80,10 +80,12 @@ export default function App() {
 
               <View>
                 <ListHeading title="Up Coming Classes" />
-
+                        
                 <FlatList
                   key={`classes-${refreshKey}`}
-                  data={CLASSES}
+                  data={CLASSES.filter((item) =>
+                    dayjs(item.date).isSame(dayjs(), "day")
+                  )}
                   renderItem={({ item }) => <HomeSchudule {...item} />}
                   keyExtractor={(item) => item.date}
                   horizontal

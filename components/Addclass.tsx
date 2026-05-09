@@ -143,20 +143,21 @@ export default function Addclass() {
     const rawHour = Number(hour);
     const rawMinute = Number(minute);
     const safeHour = isNaN(rawHour) ? 8 : Math.min(Math.max(rawHour, 1), 12);
-    const safeMinute = isNaN(rawMinute)
-      ? 0
-      : Math.min(Math.max(rawMinute, 0), 59);
-    const selectedHour =
-      period === "AM" ? safeHour % 12 : (safeHour % 12) + 12;
-
+    const safeMinute = isNaN(rawMinute) ? 0 : Math.min(Math.max(rawMinute, 0), 59);
+    const selectedHour = period === "AM" ? safeHour % 12 : (safeHour % 12) + 12;
+  
     let target = dayjs()
       .day(weekdayValue)
       .hour(selectedHour)
       .minute(safeMinute)
       .second(0);
-    if (target.isBefore(dayjs())) {
+  
+    // Only push to next week if the weekday itself is already past this week
+    // (not if just the time has passed today)
+    if (weekdayValue < dayjs().day()) {
       target = target.add(7, "day");
     }
+  
     return target.toISOString();
   };
 

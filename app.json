@@ -2,7 +2,7 @@
   "expo": {
     "name": "ORB",
     "slug": "ORB",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icons/adaptive-icon.png",
     "scheme": "orb",
@@ -18,6 +18,7 @@
       }
     },
     "android": {
+      "versionCode": 3,
       "package": "com.hal716.orb",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
