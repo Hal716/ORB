@@ -11,7 +11,6 @@
 
 <p align="center">
   <img src="assets/images/Sc1.png" width="200">
-  <img src="assets/images/Sc2.png" width="200">
 </p>
 
 ## Features
