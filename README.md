@@ -1,50 +1,147 @@
-# Welcome to your Expo app 👋
+<p align="center">
+  <img src="assets/images/splash-icon-dark.png" width="150" alt="ORB App Icon">
+</p>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<h1 align="center">ORB – University Reminder System</h1>
 
-## Get started
+<p align="center">
+  A mobile application designed to help university students
+  organize their classes, tasks, and reminders.
+</p>
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- **Class Management**
+  - Add and manage university classes.
+  - View class schedules.
+  - Keep class information organized.
 
-   ```bash
-   npx expo start
-   ```
+- **Task Management**
+  - Create and manage tasks.
+  - Set reminders for tasks.
+  - Keep track of pending tasks.
 
-In the output, you'll find options to open the app in a
+- **Schedule**
+  - View and organize your weekly schedule.
+  - Keep track of upcoming classes.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **User Authentication**
+  - Sign in and sign up using Clerk.
+  - Manage user accounts.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Notifications**
+  - Receive notifications and reminders.
+  - Get alerts for scheduled tasks.
 
-## Get a fresh project
+- **Settings**
+  - Switch between light and dark modes.
+  - Manage application preferences.
 
-When you're ready, run:
+- **Data Storage**
+  - Store data using Appwrite.
+  - Save local data using Expo SecureStore.
+  - Sync classes and tasks between local storage and the cloud.
 
-```bash
-npm run reset-project
+## Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| React Native | Mobile application development |
+| Expo | Development and building |
+| TypeScript | Programming language |
+| Expo Router | Navigation |
+| Clerk | User authentication |
+| Appwrite | Backend and cloud data storage |
+| NativeWind | Styling |
+| Expo Notifications | Notifications and reminders |
+| Expo SecureStore | Local data storage |
+| PostHog | Application analytics |
+
+## Project Structure
+
+```text
+ORB/
+│
+├── app/                  # Application screens and navigation
+│
+├── assets/               # Images, icons, and fonts
+│
+├── components/           # Reusable UI components
+│
+├── constants/            # Application constants and data
+│
+├── hooks/                # Custom React hooks
+│
+├── lib/                  # Backend and utility functions
+│
+├── scripts/              # Project scripts
+│
+├── app.json              # Expo configuration
+├── package.json          # Dependencies and scripts
+├── tsconfig.json         # TypeScript configuration
+├── global.css            # Global styles
+└── README.md
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Installation
 
-## Learn more
+### 1. Clone the repository
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+git clone https://github.com/Hal716/ORB.git
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 2. Open the project directory
 
-## Join the community
+```bash
+cd ORB
+```
 
-Join our community of developers creating universal apps.
+### 3. Install dependencies
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npm install
+```
+
+### 4. Configure environment variables
+
+Create a `.env` file in the project root and add the required configuration values:
+
+```env
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=
+EXPO_PUBLIC_POSTHOG_API_KEY=
+EXPO_PUBLIC_POSTHOG_HOST=
+```
+
+Make sure to configure the required Appwrite settings in the project as well.
+
+### 5. Start the application
+
+```bash
+npx expo start
+```
+
+You can then run the application using an Android emulator, iOS simulator, or a compatible development build.
+
+## Application Navigation
+
+The application includes four main sections:
+
+1. **Home:** View the main dashboard.
+2. **Tasks:** Manage tasks and reminders.
+3. **Schedule:** View university classes and schedules.
+4. **Settings:** Manage application preferences.
+
+## Data Management
+
+ORB uses Appwrite to store and retrieve user data.
+
+It also uses Expo SecureStore to save data locally. If cloud synchronization fails, the application can load previously saved local data.
+
+## Contributors
+
+Developed as a university software development project.
+
+**GitHub Repository:**  
+https://github.com/Hal716/ORB
